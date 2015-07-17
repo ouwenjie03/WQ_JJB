@@ -1,0 +1,64 @@
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+			  <!--android:orientation="vertical" android:layout_width="fill_parent"-->
+			  <!--android:layout_height="fill_parent">-->
+
+    <!--&lt;!&ndash;<LinearLayout android:id="@+id/chart" android:orientation="horizontal"&ndash;&gt;-->
+                  <!--&lt;!&ndash;android:layout_width="fill_parent" android:layout_height="0dip" android:layout_weight="1"/>&ndash;&gt;-->
+
+
+    <!--<android.support.v4.view.ViewPager-->
+            <!--android:id="@+id/viewPager"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content" />-->
+
+    <!--<RelativeLayout-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="vertical" >-->
+
+        <!--<LinearLayout-->
+                <!--android:id="@+id/viewGroup"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_marginBottom="50dp"-->
+                <!--android:gravity="center_horizontal"-->
+                <!--android:orientation="horizontal" android:layout_alignParentRight="true"-->
+                <!--android:layout_alignParentEnd="true" android:padding="10dp">-->
+        <!--</LinearLayout>-->
+    <!--</RelativeLayout>-->
+
+
+<!--</FrameLayout>-->
+
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="fill_parent"
+             android:layout_height="fill_parent"
+             android:orientation="vertical" >
+
+    <android.support.v4.view.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+    <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+        <LinearLayout
+                android:id="@+id/viewGroup"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="50dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal" android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" android:padding="10dp">
+        </LinearLayout>
+    </RelativeLayout>
+
+</FrameLayout>
+

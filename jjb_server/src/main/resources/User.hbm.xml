@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.jjb.bean">
+	<class name="User" table="User">
+		<!-- 定义id -->
+		<id name="userId" column="userId" type="integer">
+			<generator class="native" />
+		</id>
+		<!-- 定义用户名 -->
+		<property name="username" column="username" type="string" />
+		<!-- 定义密码 -->
+		<property name="password" column="password" type="string"
+			length="32" />
+	</class>
+</hibernate-mapping>

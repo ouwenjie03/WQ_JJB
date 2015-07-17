@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.jjb.bean">
+	<class name="AccessKey" table="AccessKey">
+		<!-- 定义用户id -->
+		<id name="userId" column="userId" type="integer" />
+		<!-- 定义access key -->
+		<property name="accessKey" column="accessKey" type="string" length="32" />
+		<!-- 定义超时日期 -->
+		<property name="expiresTime" column="expiresTime" type="java.util.Date" />
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/pml" />
+		<property name="username" value="root" />
+		<property name="password" value="a19941215" />
+	</bean>
+	<!-- Hibernate会话工厂实例 -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="configLocation">
+			<value>classpath:hibernate.cfg.xml</value>
+		</property>
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 添加对事务处理的支持 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory">
+			<ref local="sessionFactory" />
+		</property>
+	</bean>
+
+	<!-- ItemDao -->
+	<bean id="itemDao" class="com.jjb.dao.impl.ItemDaoImpl" />
+	<!-- UserDao -->
+	<bean id="userDao" class="com.jjb.dao.impl.UserDaoImpl" />
+	<!-- MoneyDao -->
+	<bean id="moneyDao" class="com.jjb.dao.impl.MoneyDaoImpl" />
+	<!-- AccessKeyDao -->
+	<bean id="accessKeyDao" class="com.jjb.dao.impl.AccessKeyDaoImpl" />
+
+	<!-- JJBAction -->
+	<bean id="jjbAction" class="com.jjb.action.JJBAction">
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="itemDao" ref="itemDao" />
+		<property name="userDao" ref="userDao" />
+		<property name="moneyDao" ref="moneyDao" />
+		<property name="accessKeyDao" ref="accessKeyDao" />
+	</bean>
+</beans>
