@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.jjb.bean">
+	<class name="Item" table="Item">
+		<!-- 定义id -->
+		<id name="itemId" column="itemId" type="string" length="255" />
+		<!-- 定义用户id -->
+		<property name="userId" column="userId" type="integer" />
+		<!-- 定义使用项名称 -->
+		<property name="name" column="name" type="string" length="255" />
+		<!-- 定义金额 -->
+		<property name="price" column="price" type="double" />
+		<!-- 定义是否为支出 -->
+		<property name="isOut" column="isOut" type="boolean" />
+		<!-- 定义分类 -->
+		<property name="classify" column="classify" type="integer" />
+		<!-- 定义事件发生日期 -->
+		<property name="occurredTime" column="occurredTime" type="java.util.Date" />
+		<!-- 定义记录修改日期 -->
+		<property name="modifiedTime" column="modifiedTime" type="java.util.Date" />
+	</class>
+</hibernate-mapping>
