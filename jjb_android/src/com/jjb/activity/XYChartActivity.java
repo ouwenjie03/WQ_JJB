@@ -49,9 +49,11 @@ public class XYChartActivity extends Activity implements ViewPager.OnPageChangeL
 	/** Colors to be used for the pie slices. */
 	private static int[] COLORS = new int[] { Color.GREEN, Color.BLUE, Color.MAGENTA, Color.CYAN };
 	/** The main series that will include all the data. */
-	private CategorySeries mSeries = new CategorySeries("");
+	private CategorySeries mSeries1 = new CategorySeries("");
+	private CategorySeries mSeries2 = new CategorySeries("");
 	/** The main renderer for the main dataset. */
-	private DefaultRenderer mPieRenderer = new DefaultRenderer();
+	private DefaultRenderer mPieRenderer1 = new DefaultRenderer();
+	private DefaultRenderer mPieRenderer2 = new DefaultRenderer();
 
 	/**
 	 * ViewPager
@@ -64,7 +66,7 @@ public class XYChartActivity extends Activity implements ViewPager.OnPageChangeL
 	/**
 	 * 装ImageView数组
 	 */
-	private GraphicalView[] mGraphicalViews = new GraphicalView[2];
+	private GraphicalView[] mGraphicalViews = new GraphicalView[3];
 	
 	private String[] month2Str = {"Jan","Feb","Mar",
 			"Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
@@ -78,8 +80,10 @@ public class XYChartActivity extends Activity implements ViewPager.OnPageChangeL
 	  outState.putSerializable("current_series", mCurrentSeries);
 	  outState.putSerializable("current_renderer", mCurrentRenderer);
 
-		outState.putSerializable("current_series", mSeries);
-		outState.putSerializable("current_renderer", mPieRenderer);
+		outState.putSerializable("current_series1", mSeries1);
+		outState.putSerializable("current_series2", mSeries2);
+		outState.putSerializable("current_renderer1", mPieRenderer1);
+		outState.putSerializable("current_renderer2", mPieRenderer2);
 	}
 	  
 	@Override
@@ -88,12 +92,14 @@ public class XYChartActivity extends Activity implements ViewPager.OnPageChangeL
 	  // restore the current data, for instance when changing the screen
 	  // orientation
 	  mDataset = (XYMultipleSeriesDataset) savedState.getSerializable("dataset");
-		mXYRenderer = (XYMultipleSeriesRenderer) savedState.getSerializable("renderer");
+	  mXYRenderer = (XYMultipleSeriesRenderer) savedState.getSerializable("renderer");
 	  mCurrentSeries = (XYSeries) savedState.getSerializable("current_series");
 	  mCurrentRenderer = (XYSeriesRenderer) savedState.getSerializable("current_renderer");
 
-		mSeries = (CategorySeries) savedState.getSerializable("current_series");
-		mPieRenderer = (DefaultRenderer) savedState.getSerializable("current_renderer");
+	  mSeries1 = (CategorySeries) savedState.getSerializable("current_series1");
+	  mSeries2 = (CategorySeries) savedState.getSerializable("current_series2");
+	  mPieRenderer1 = (DefaultRenderer) savedState.getSerializable("current_renderer1");
+	  mPieRenderer2 = (DefaultRenderer) savedState.getSerializable("current_renderer2");
 	}
 
 	@Override
@@ -105,7 +111,7 @@ public class XYChartActivity extends Activity implements ViewPager.OnPageChangeL
 		ViewGroup group = (ViewGroup)findViewById(R.id.viewGroup);
 		viewPager = (ViewPager) findViewById(R.id.viewPager);
 		//将点点加入到ViewGroup中
-		tips = new ImageView[2];
+		tips = new ImageView[3];
 		for(int i=0; i<tips.length; i++) {
 			ImageView imageView = new ImageView(this);
 			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(20, 20);
@@ -129,7 +135,7 @@ public class XYChartActivity extends Activity implements ViewPager.OnPageChangeL
 		viewPager.setCurrentItem(0);
 
 
-
+		//創建折綫圖
         String[] titles = new String[] { "支出", "收入" };
         
         // create a new renderer for the new series
@@ -171,22 +177,42 @@ public class XYChartActivity extends Activity implements ViewPager.OnPageChangeL
         Bundle bundle = getIntent().getExtras();
 		//price in every item
 		ArrayList<MyDouble> allMyDoublesOut = (ArrayList<MyDouble>) getIntent().getSerializableExtra("allMyDoublesOut");
-		//date in every item 2015-06-17
+		//date in every item，format： 2015-06-17
 		ArrayList<String> allMyTimeStrings = (ArrayList<String>) getIntent().getSerializableExtra("allMyTimeStrings");
 				
 		String thisDate = "",reg = "-";
 		Calendar calendar = Calendar.getInstance();
-        long fd1 = 0;
 		int myDoubleLengthOut = allMyDoublesOut.size();
-		//支出
+		//支出的dataset
 		double allSpendingPrice[] = new double[myDoubleLengthOut];
 		double allSpendingKeys[] = new double[myDoubleLengthOut];
 		for (int i = 0;i < myDoubleLengthOut;i++) {
+			calendar.set(1970,0,1);
+	        int startYear = calendar.get(Calendar.YEAR);
+	        int startDayInYear = calendar.get(Calendar.DAY_OF_YEAR);
+//			thisDate = allMyTimeStrings.get(i);
+//			String[] f = thisDate.trim().split(reg);
+//	        calendar.set(Integer.parseInt (f[0]), Integer.parseInt (f[1]) - 1, Integer.parseInt (f[2]));
+//	        long fd2 = calendar.getTime().getTime();
+//			int index = Integer.parseInt("" + (fd2 - 0) / 100000000);
+			
 			thisDate = allMyTimeStrings.get(i);
 			String[] f = thisDate.trim().split(reg);
 	        calendar.set(Integer.parseInt (f[0]), Integer.parseInt (f[1]) - 1, Integer.parseInt (f[2]));
-	        long fd2 = calendar.getTime().getTime();
-			int index = Integer.parseInt("" + (fd2 - fd1) / 100000000);
+	        int thisYear = calendar.get(Calendar.YEAR);
+	        int thisDayInYear = calendar.get(Calendar.DAY_OF_YEAR);
+	        int index = 0;
+	        while(startYear < thisYear)  
+            {  
+                if(startYear%400 == 0 || (startYear%4 == 0 && startYear%100 != 0))
+                {  
+                	index += 366;  
+                } else {
+                	index += 365;
+                }
+                ++startYear;  
+            } 
+	        index += (thisDayInYear - startDayInYear);
 			
 			allSpendingPrice[i] = allMyDoublesOut.get(i).count;
 			allSpendingKeys[i] = index;
@@ -199,17 +225,38 @@ public class XYChartActivity extends Activity implements ViewPager.OnPageChangeL
 		//price in every item
 		ArrayList<MyDouble> allMyDoublesIn = (ArrayList<MyDouble>) getIntent().getSerializableExtra("allMyDoublesIn");
 		
-		//收入
+		//收入的dataset
 		int myDoubleLengthIn = allMyDoublesIn.size();
 		double allIncomePrice[] = new double[myDoubleLengthIn];
 		double allIncomeKeys[] = new double[myDoubleLengthIn];
 		for (int i = 0;i < myDoubleLengthIn;i++) {
+			calendar.set(1970,0,1);
+	        int startYear = calendar.get(Calendar.YEAR);
+	        int startDayInYear = calendar.get(Calendar.DAY_OF_YEAR);
+//			thisDate = allMyTimeStrings.get(i);
+//			String[] f = thisDate.trim().split(reg);
+//	        calendar.set(Integer.parseInt (f[0]), Integer.parseInt (f[1]) - 1, Integer.parseInt (f[2]));
+//	        long fd2 = calendar.getTime().getTime();
+//			int index = Integer.parseInt("" + (fd2 - 0) / 100000000);
+//			
 			thisDate = allMyTimeStrings.get(i);
 			String[] f = thisDate.trim().split(reg);
 	        calendar.set(Integer.parseInt (f[0]), Integer.parseInt (f[1]) - 1, Integer.parseInt (f[2]));
-	        long fd2 = calendar.getTime().getTime();
-			int index = Integer.parseInt("" + (fd2 - fd1) / 100000000);
-			
+	        int thisYear = calendar.get(Calendar.YEAR);
+	        int thisDayInYear = calendar.get(Calendar.DAY_OF_YEAR);
+	        int index = 0;
+	        while(startYear < thisYear)  
+            {  
+                if(startYear%400 == 0 || (startYear%4 == 0 && startYear%100 != 0))
+                {  
+                	index += 366;  
+                } else {
+                	index += 365;
+                }
+                ++startYear;  
+            } 
+	        index += (thisDayInYear - startDayInYear);
+	        
 			allIncomePrice[i] = allMyDoublesIn.get(i).count;
 			allIncomeKeys[i] = index;
 			mXYRenderer.addXTextLabel(index, month2Str[Integer.parseInt (f[1]) - 1] + "\n" + f[2]);
@@ -233,49 +280,87 @@ public class XYChartActivity extends Activity implements ViewPager.OnPageChangeL
     	mChartView = ChartFactory.getLineChartView(this, mDataset, mXYRenderer);
     	//layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));
 		mGraphicalViews[0] = mChartView;
-
 		//mChartView.repaint();
 
-		//饼图
-		String name[] = {"clothes","diet","shelter","activity"};
-		String chineseName[] = {"衣","食","住","行"};
-		double price[] = new double[4];
+		//支出饼图
+		String name1[] = {"clothesOut","dietOut","shelterOut","activityOut"};
+		String chineseName1[] = {"衣","食","住","行"};
+		double price1[] = new double[4];
 		for (int i = 0;i < 4;i++)
 		{
-			price[i] = bundle.getDouble(name[i]);
-			//自己编的数据
-			//price[i] = i * i + 3 * i + 10;
+			price1[i] = bundle.getDouble(name1[i]);
 
-			mSeries.add(chineseName[i], price[i]);
+			mSeries1.add(chineseName1[i], price1[i]);
 			SimpleSeriesRenderer renderer = new SimpleSeriesRenderer();
-			renderer.setColor(COLORS[(mSeries.getItemCount() - 1) % COLORS.length]);
-			mPieRenderer.addSeriesRenderer(renderer);
+			renderer.setColor(COLORS[(mSeries1.getItemCount() - 1) % COLORS.length]);
+			mPieRenderer1.addSeriesRenderer(renderer);
 		}
 
-		mPieRenderer.setZoomButtonsVisible(true);
-		mPieRenderer.setStartAngle(180);
-		mPieRenderer.setDisplayValues(true);
-		mPieRenderer.setChartTitleTextSize(30);
-		mPieRenderer.setChartTitle("分类饼图");
-		mPieRenderer.setAxesColor(Color.RED);
-		mPieRenderer.setLegendTextSize(30);
-		mPieRenderer.setLabelsColor(Color.BLACK);
-		mPieRenderer.setLabelsTextSize(30);
+		mPieRenderer1.setZoomButtonsVisible(true);
+		mPieRenderer1.setStartAngle(180);
+		mPieRenderer1.setDisplayValues(true);
+		mPieRenderer1.setChartTitleTextSize(30);
+		mPieRenderer1.setChartTitle("分类支出饼图");
+		mPieRenderer1.setAxesColor(Color.RED);
+		mPieRenderer1.setLegendTextSize(30);
+		mPieRenderer1.setLabelsColor(Color.BLACK);
+		mPieRenderer1.setLabelsTextSize(30);
 		//mPieRenderer.setExternalZoomEnabled(false);
 		//mPieRenderer.setFitLegend(false);
-		mPieRenderer.setPanEnabled(false);
+		mPieRenderer1.setPanEnabled(false);
 		//mPieRenderer.setFitLegend(false);
-		mPieRenderer.setZoomButtonsVisible(true);
-		mPieRenderer.setZoomEnabled(false);//放大缩小
+		mPieRenderer1.setZoomButtonsVisible(true);
+		mPieRenderer1.setZoomEnabled(false);//放大缩小
 		//mPieRenderer.setScale(2);
 		//mPieRenderer.setMargins(new int[]{0,0,0,10});
 
 
 		//LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
-		mChartView = ChartFactory.getPieChartView(this, mSeries, mPieRenderer);
+		mChartView = ChartFactory.getPieChartView(this, mSeries1, mPieRenderer1);
 		mChartView.setPadding(0,0,0,10);
 		//layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		mGraphicalViews[1] = mChartView;
+
+		//mChartView.repaint();
+
+		//收入饼图
+		String name2[] = {"clothesIn","dietIn","shelterIn","activityIn"};
+		String chineseName2[] = {"衣","食","住","行"};
+		double price2[] = new double[4];
+		for (int i = 0;i < 4;i++)
+		{
+			price2[i] = bundle.getDouble(name2[i]);
+
+			mSeries2.add(chineseName2[i], price2[i]);
+			SimpleSeriesRenderer renderer = new SimpleSeriesRenderer();
+			renderer.setColor(COLORS[(mSeries2.getItemCount() - 1) % COLORS.length]);
+			mPieRenderer2.addSeriesRenderer(renderer);
+		}
+
+		mPieRenderer2.setZoomButtonsVisible(true);
+		mPieRenderer2.setStartAngle(180);
+		mPieRenderer2.setDisplayValues(true);
+		mPieRenderer2.setChartTitleTextSize(30);
+		mPieRenderer2.setChartTitle("分类收入饼图");
+		mPieRenderer2.setAxesColor(Color.RED);
+		mPieRenderer2.setLegendTextSize(30);
+		mPieRenderer2.setLabelsColor(Color.BLACK);
+		mPieRenderer2.setLabelsTextSize(30);
+		//mPieRenderer.setExternalZoomEnabled(false);
+		//mPieRenderer.setFitLegend(false);
+		mPieRenderer2.setPanEnabled(false);
+		//mPieRenderer.setFitLegend(false);
+		mPieRenderer2.setZoomButtonsVisible(true);
+		mPieRenderer2.setZoomEnabled(false);//放大缩小
+		//mPieRenderer.setScale(2);
+		//mPieRenderer.setMargins(new int[]{0,0,0,10});
+
+
+		//LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
+		mChartView = ChartFactory.getPieChartView(this, mSeries2, mPieRenderer2);
+		mChartView.setPadding(0,0,0,10);
+		//layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		mGraphicalViews[2] = mChartView;
 
 		//mChartView.repaint();
     }
@@ -287,8 +372,8 @@ public class XYChartActivity extends Activity implements ViewPager.OnPageChangeL
 	    	//LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
 	    	mChartView = ChartFactory.getLineChartView(this, mDataset, mXYRenderer);
 	    	// enable the chart click events
-				mXYRenderer.setClickEnabled(true);
-				mXYRenderer.setSelectableBuffer(10);
+			mXYRenderer.setClickEnabled(true);
+			mXYRenderer.setSelectableBuffer(10);
 	    	mChartView.setOnClickListener(new View.OnClickListener() {
 	    		public void onClick(View v) {
 	    			// handle the click event on the chart
@@ -308,29 +393,29 @@ public class XYChartActivity extends Activity implements ViewPager.OnPageChangeL
 	    	});
 	    	//layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 
-				//LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
-				mChartView = ChartFactory.getPieChartView(this, mSeries, mPieRenderer);
-				mPieRenderer.setClickEnabled(true);
-				mChartView.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						SeriesSelection seriesSelection = mChartView.getCurrentSeriesAndPoint();
-						if (seriesSelection == null) {
-							Toast.makeText(XYChartActivity.this, "No chart element selected", Toast.LENGTH_SHORT)
-									.show();
-						} else {
-							for (int i = 0; i < mSeries.getItemCount(); i++) {
-								mPieRenderer.getSeriesRendererAt(i).setHighlighted(i == seriesSelection.getPointIndex());
-							}
-							mChartView.repaint();
-							Toast.makeText(
-									XYChartActivity.this,
-									"Chart data point index " + seriesSelection.getPointIndex() + " selected"
-											+ " point value=" + seriesSelection.getValue(), Toast.LENGTH_SHORT).show();
-						}
-					}
-				});
-				//layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+			//LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
+//			mChartView = ChartFactory.getPieChartView(this, mSeries1, mPieRenderer1);
+//			mPieRenderer1.setClickEnabled(true);
+//			mChartView.setOnClickListener(new View.OnClickListener() {
+//				@Override
+//				public void onClick(View v) {
+//					SeriesSelection seriesSelection = mChartView.getCurrentSeriesAndPoint();
+//					if (seriesSelection == null) {
+//						Toast.makeText(XYChartActivity.this, "No chart element selected", Toast.LENGTH_SHORT)
+//								.show();
+//					} else {
+//						for (int i = 0; i < mSeries1.getItemCount(); i++) {
+//							mPieRenderer1.getSeriesRendererAt(i).setHighlighted(i == seriesSelection.getPointIndex());
+//						}
+//						mChartView.repaint();
+//						Toast.makeText(
+//								XYChartActivity.this,
+//								"Chart data point index " + seriesSelection.getPointIndex() + " selected"
+//										+ " point value=" + seriesSelection.getValue(), Toast.LENGTH_SHORT).show();
+//					}
+//				}
+//			});
+			//layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 	    } else {
 	    	//mChartView.repaint();
 	    }
