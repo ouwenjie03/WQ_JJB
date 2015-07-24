@@ -94,48 +94,75 @@ public class MainActivity extends BaseActivity {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			String[] words = null;
+			ArrayList<String> words = new ArrayList<String>();
 			if (itemName != null) {
-				words = itemName.split(" ");
+				for (int i = 0;i < itemName.length();i++){
+					if (itemName.charAt(i) != ' ') {
+						words.add(new String() + itemName.charAt(i));
+					}
+				}
+				//words = itemName.split(" ");
 			}
-			int size = words.length;
+			int size = words.size();
 			int index = 0;
 			for (int i = 0; i < size; ++i) {
-				if (words[i].matches("[十九八七六五四三二一万千百零块元毛角0-9]+")) {
+				if (words.get(i).matches("[十九八七六五四三二一两万千百零块元毛角0-9]+")) {
 					index= i;
 					break;
 				}
 			}
 			String tmp = "";
 			for (int i = 0; i < index; ++i)
-				tmp += words[i];
+				tmp += words.get(i);
 			item.setText(tmp);
-			tmp = words[index];
-			for (int i = index+1; i < size; ++i) {
-				if (words[i].matches("[块点]") && i +1 < size) {
+			tmp = "";
+			for (int i = index; i < size; ++i) {
+				if (words.get(i).matches("[块点元]") && i +1 < size) {
 				    tmp += ".";
 				    for (int j = i + 1; j < size; ++j) {
-				    	if (words[j].matches("[一]")) {
+				    	if (words.get(j).matches("[一1]")) {
 				    		tmp += "1";
-				    	} else if (words[j].matches("[二]")) {
+				    	} else if (words.get(j).matches("[二两2]")) {
 				    		tmp += "2";
-				    	} else if (words[j].matches("[三]")) {
+				    	} else if (words.get(j).matches("[三3]")) {
 				    		tmp += "3";
-				    	} else if (words[j].matches( "[四]")) {
+				    	} else if (words.get(j).matches( "[四4]")) {
 				    		tmp += "4";
-				    	} else if (words[j].matches( "[五]")) {
+				    	} else if (words.get(j).matches( "[五5]")) {
 				    		tmp += "5";
-				    	} else if (words[j].matches( "[六]")) {
+				    	} else if (words.get(j).matches( "[六6]")) {
 				    		tmp += "6";
-				    	} else if (words[j].matches("[七]")) {
+				    	} else if (words.get(j).matches("[七7]")) {
 				    		tmp += "7";
-				    	} else if (words[j].matches("[八]")) {
+				    	} else if (words.get(j).matches("[八8]")) {
 				    		tmp += "8";
-				    	} else if (words[j].matches("[九]")) {
+				    	} else if (words.get(j).matches("[九9]")) {
 				    		tmp += "9";
 				    	}
 				    }
 				    break;
+				} else {
+					if (words.get(i).matches("[一1]")) {
+			    		tmp += "1";
+			    	} else if (words.get(i).matches("[二两2]")) {
+			    		tmp += "2";
+			    	} else if (words.get(i).matches("[三3]")) {
+			    		tmp += "3";
+			    	} else if (words.get(i).matches( "[四4]")) {
+			    		tmp += "4";
+			    	} else if (words.get(i).matches( "[五5]")) {
+			    		tmp += "5";
+			    	} else if (words.get(i).matches( "[六6]")) {
+			    		tmp += "6";
+			    	} else if (words.get(i).matches("[七7]")) {
+			    		tmp += "7";
+			    	} else if (words.get(i).matches("[八8]")) {
+			    		tmp += "8";
+			    	} else if (words.get(i).matches("[九9]")) {
+			    		tmp += "9";
+			    	} else if (words.get(i).matches("[十]") && i == index) {
+			    		tmp += "1";
+			    	}
 				}
 			}
 			price.setText(tmp);
@@ -286,7 +313,7 @@ public class MainActivity extends BaseActivity {
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(70,
 				LayoutParams.WRAP_CONTENT);
 		params.setMargins(10, 0, 0, 0);
-		np.setLayoutParams(params);
+		//np.setLayoutParams(params);
 	}
 
 	@Override
